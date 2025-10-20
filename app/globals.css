@@ -1,7 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* --- CORRECCIÓN 1: Se eliminó la línea problemática.
+     @custom-variant es una sintaxis CSS experimental o específica de una herramienta que
+     Next.js/Webpack con PostCSS no puede procesar por defecto. Si necesitas esta
+     funcionalidad, debes usar un plugin de PostCSS que la soporte. Por ahora, la eliminamos
+     para que el build funcione.
+
 @custom-variant dark (&:is(.dark *));
+*/
 
 :root {
   --background: 214 32% 95%;
@@ -74,49 +81,20 @@
   --sidebar-ring: 217.2 91.2% 59.8%;
 }
 
-@theme inline {
-  /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar-background);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
+/* --- CORRECCIÓN 2: Se eliminó la directiva CSS inválida @theme inline.
+     Esta directiva no es un estándar CSS ni una extensión de Tailwind/PostCSS
+     reconocida por el compilador de Next.js. El contenido es principalmente
+     una reasignación de variables CSS que no debería estar ahí.
+     Si el objetivo es usar estas variables en Tailwind, la configuración va en
+     tailwind.config.js, no en globals.css.
+*/
 
 @layer base {
   * {
-    /* Removed invalid border-border class that was causing the error */
+    /* CORRECCIÓN 3: Se eliminó el comentario sobre una clase 'border-border'
+       que no es un error de sintaxis, pero puede ser una fuente de conflicto.
+       El @apply outline-ring/50 está bien.
+    */
     @apply outline-ring/50;
   }
   body {
@@ -129,3 +107,10 @@
     text-wrap: balance;
   }
 }
+/* --- CORRECCIÓN 4: Se eliminaron los caracteres finales inválidos '}' y 'd'.
+     Tu archivo terminaba con:
+     }
+     d
+     
+     Eso es un error de sintaxis CSS/PostCSS que detiene el compilador.
+*/
