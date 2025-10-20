@@ -32,9 +32,19 @@ interface Puesto {
   descripcionPuesto: string
   horasDedicadas: number
   nombreCarrera: string
-  cantMateriasAprobadasReq: number
-  cantMateriasRegularesReq: number
+  cantMateriasAprobadasReq: number[] // Changed to array to support different requirements per career
+  cantMateriasRegularesReq: number[] // Changed to array to support different requirements per career
   cantVacantes: number
+}
+
+interface SelectedPuestoWithCarrera {
+  puesto: Puesto
+  carreraIndex: number
+  carreraNombre: string
+}
+
+interface SelectedPuestoOnly {
+  puesto: Puesto
 }
 
 interface ErrorState {
@@ -73,6 +83,28 @@ const proyectos: Proyecto[] = [
     fechaFinProyecto: "2026-05-15",
     nombreEmpresa: "Constructora Andina SRL",
   },
+  {
+    numeroProyecto: "PRJ005",
+    nombreProyecto: "Portal de Pacientes",
+    descripcionProyecto:
+      "Plataforma web que permite a pacientes acceder resultados, gestionar turnos y recibir notificaciones médicas.",
+    fechaHoraInicioPostulaciones: "2025-10-18T09:00:00",
+    fechaHoraCierrePostulaciones: "2025-11-25T23:59:00",
+    fechaInicioActividades: "2025-12-15",
+    fechaFinProyecto: "2026-05-30",
+    nombreEmpresa: "Innova Salud S.A.",
+  },
+  {
+    numeroProyecto: "PRJ006",
+    nombreProyecto: "Sistema de Inventario Inteligente",
+    descripcionProyecto:
+      "Desarrollo de sistema automatizado para gestión de inventarios con análisis predictivo y optimización de stock",
+    fechaHoraInicioPostulaciones: "2025-10-22T08:00:00",
+    fechaHoraCierrePostulaciones: "2025-12-10T23:59:00",
+    fechaInicioActividades: "2026-01-10",
+    fechaFinProyecto: "2026-06-15",
+    nombreEmpresa: "LogiTech Argentina S.A.",
+  },
 ]
 
 const puestosProyecto1: Puesto[] = [
@@ -83,8 +115,8 @@ const puestosProyecto1: Puesto[] = [
       "Diseña, desarrolla y da soporte a aplicaciones web, asegurando su rendimiento, escalabilidad y continuidad operativa",
     horasDedicadas: 20,
     nombreCarrera: "Ingeniería en Sistemas\nLicenciatura en Informática",
-    cantMateriasAprobadasReq: 22,
-    cantMateriasRegularesReq: 4,
+    cantMateriasAprobadasReq: [22, 25], // Different requirements for each career
+    cantMateriasRegularesReq: [4, 3], // Different requirements for each career
     cantVacantes: 3,
   },
   {
@@ -94,8 +126,8 @@ const puestosProyecto1: Puesto[] = [
       "Crea interfaces intuitivas y atractivas para la plataforma, mejorando la experiencia en el entorno digital",
     horasDedicadas: 25,
     nombreCarrera: "Diseño Gráfico\nTecnicatura en Programación",
-    cantMateriasAprobadasReq: 23,
-    cantMateriasRegularesReq: 5,
+    cantMateriasAprobadasReq: [18, 20], // Different requirements for each career
+    cantMateriasRegularesReq: [5, 4], // Different requirements for each career
     cantVacantes: 3,
   },
   {
@@ -105,20 +137,9 @@ const puestosProyecto1: Puesto[] = [
       "Analiza requerimientos del negocio y diseña soluciones tecnológicas eficientes para optimizar procesos empresariales",
     horasDedicadas: 22,
     nombreCarrera: "Ingeniería en Sistemas de Información\nLicenciatura en Informática",
-    cantMateriasAprobadasReq: 25,
-    cantMateriasRegularesReq: 4,
+    cantMateriasAprobadasReq: [25, 23], // Different requirements for each career
+    cantMateriasRegularesReq: [4, 5], // Different requirements for each career
     cantVacantes: 5,
-  },
-  {
-    codPuesto: "P010",
-    nombrePuesto: "Especialista en Testing",
-    descripcionPuesto:
-      "Ejecuta pruebas de software, identifica defectos y garantiza la calidad del producto antes de su implementación",
-    horasDedicadas: 18,
-    nombreCarrera: "Licenciatura en Informática\nTecnicatura en Programación",
-    cantMateriasAprobadasReq: 20,
-    cantMateriasRegularesReq: 5,
-    cantVacantes: 4,
   },
 ]
 
@@ -130,8 +151,8 @@ const puestosProyecto2: Puesto[] = [
       "Supervisa y coordina la ejecución de proyectos de construcción, asegurando calidad, plazos, costos y cumplimiento de normas de seguridad",
     horasDedicadas: 30,
     nombreCarrera: "Ingeniería Civil\nIngeniería Industrial",
-    cantMateriasAprobadasReq: 24,
-    cantMateriasRegularesReq: 5,
+    cantMateriasAprobadasReq: [24, 22], // Different requirements for each career
+    cantMateriasRegularesReq: [5, 6], // Different requirements for each career
     cantVacantes: 3,
   },
   {
@@ -141,8 +162,8 @@ const puestosProyecto2: Puesto[] = [
       "Diseña, desarrolla y da soporte a aplicaciones web, asegurando su rendimiento, escalabilidad y continuidad operativa",
     horasDedicadas: 20,
     nombreCarrera: "Ingeniería en Sistemas\nTecnicatura en Programación",
-    cantMateriasAprobadasReq: 21,
-    cantMateriasRegularesReq: 4,
+    cantMateriasAprobadasReq: [21, 18], // Different requirements for each career
+    cantMateriasRegularesReq: [4, 5], // Different requirements for each career
     cantVacantes: 3,
   },
   {
@@ -152,20 +173,59 @@ const puestosProyecto2: Puesto[] = [
       "Implementa y supervisa protocolos de seguridad en obra, realiza inspecciones y capacita al personal en prevención de riesgos laborales",
     horasDedicadas: 25,
     nombreCarrera: "Licenciatura en Trabajo Social\nIngeniería Industrial",
-    cantMateriasAprobadasReq: 20,
-    cantMateriasRegularesReq: 5,
+    cantMateriasAprobadasReq: [20, 23], // Different requirements for each career
+    cantMateriasRegularesReq: [5, 4], // Different requirements for each career
     cantVacantes: 6,
   },
+]
+
+const puestosProyecto3: Puesto[] = [
   {
-    codPuesto: "P013",
-    nombrePuesto: "Analista de Costos",
+    codPuesto: "P007",
+    nombrePuesto: "Desarrollador/a Full stack",
     descripcionPuesto:
-      "Analiza y controla los costos de construcción, elabora presupuestos detallados y realiza seguimiento financiero de los proyectos",
-    horasDedicadas: 22,
-    nombreCarrera: "Licenciatura en Administración\nContador Público",
-    cantMateriasAprobadasReq: 25,
-    cantMateriasRegularesReq: 4,
+      "Diseña, desarrolla y da soporte a aplicaciones web, asegurando su rendimiento, escalabilidad y continuidad operativa",
+    horasDedicadas: 20,
+    nombreCarrera: "Ingeniería en Sistemas\nLicenciatura en Informática",
+    cantMateriasAprobadasReq: [22, 24], // Different requirements for each career
+    cantMateriasRegularesReq: [4, 3], // Different requirements for each career
+    cantVacantes: 3,
+  },
+  {
+    codPuesto: "P010",
+    nombrePuesto: "Especialista en Testing",
+    descripcionPuesto:
+      "Ejecuta pruebas de software, identifica defectos y garantiza la calidad del producto antes de su implementación",
+    horasDedicadas: 18,
+    nombreCarrera: "Licenciatura en Informática\nTecnicatura en Programación",
+    cantMateriasAprobadasReq: [20, 17], // Different requirements for each career
+    cantMateriasRegularesReq: [5, 6], // Different requirements for each career
     cantVacantes: 4,
+  },
+]
+
+const puestosProyecto4: Puesto[] = [
+  {
+    codPuesto: "P014",
+    nombrePuesto: "Analista de Datos",
+    descripcionPuesto:
+      "Analiza datos de inventario, genera reportes predictivos y optimiza procesos de gestión de stock mediante análisis estadístico",
+    horasDedicadas: 22,
+    nombreCarrera: "Ingeniería en Petróleo\nLicenciatura en Geología",
+    cantMateriasAprobadasReq: [23, 21], // Different requirements for each career
+    cantMateriasRegularesReq: [4, 5], // Different requirements for each career
+    cantVacantes: 2,
+  },
+  {
+    codPuesto: "P015",
+    nombrePuesto: "Desarrollador/a Backend",
+    descripcionPuesto:
+      "Desarrolla y mantiene la lógica del servidor, APIs y bases de datos para el sistema de inventario inteligente",
+    horasDedicadas: 25,
+    nombreCarrera: "Arquitectura\nDiseño Industrial",
+    cantMateriasAprobadasReq: [20, 18], // Different requirements for each career
+    cantMateriasRegularesReq: [5, 6], // Different requirements for each career
+    cantVacantes: 3,
   },
 ]
 
@@ -174,9 +234,11 @@ export default function PostulacionProyecto() {
   const [selectedUniversidad, setSelectedUniversidad] = useState("1") // Set default university
   const [nroLegajo, setNroLegajo] = useState("12345") // Set default legajo
   const [selectedProyecto, setSelectedProyecto] = useState<Proyecto | null>(null)
-  const [selectedPuesto, setSelectedPuesto] = useState<Puesto | null>(null)
+  const [selectedPuestoOnly, setSelectedPuestoOnly] = useState<Puesto | null>(null)
+  const [selectedPuesto, setSelectedPuesto] = useState<SelectedPuestoWithCarrera | null>(null)
   const [error, setError] = useState<ErrorState>({ show: false, message: "", type: "error" })
   const [loading, setLoading] = useState(false)
+  const [hidePortalPacientes, setHidePortalPacientes] = useState(false)
 
   const showError = (message: string, type: "error" | "success" = "error") => {
     setError({ show: true, message, type })
@@ -236,62 +298,74 @@ export default function PostulacionProyecto() {
       return
     }
 
+    const puesto = selectedPuesto.puesto
+
     if (selectedProyecto?.numeroProyecto === "PRJ003") {
-      if (selectedPuesto.codPuesto === "P007") {
+      if (puesto.codPuesto === "P007") {
         setLoading(true)
         await new Promise((resolve) => setTimeout(resolve, 2000))
         setLoading(false)
         showError("Postulación exitosa al proyecto", "success")
-        setCurrentStep(4)
+        setCurrentStep(5) // Changed from 4 to 5
         return
       }
 
-      if (selectedPuesto.codPuesto === "P008") {
-        showError(
-          "No es posible postularse al Puesto seleccionado. Usted no cuenta con ninguna carrera habilitada para el Puesto",
-        )
-        return false
-      }
-
-      if (selectedPuesto.codPuesto === "P009") {
+      if (puesto.codPuesto === "P008") {
         showError(
           `No se ha podido completar la postulación al Puesto. El periodo de postulaciones al proyecto ${selectedProyecto?.nombreProyecto} ha cerrado.`,
         )
         return false
       }
 
-      if (selectedPuesto.codPuesto === "P010") {
-        showError(
-          "No se ha podido completar la postulación al Puesto. Se ha superado el número máximo de postulaciones",
-        )
+      if (puesto.codPuesto === "P009") {
+        showError("No se ha podido completar la postulación al Puesto. Usted ya se encuentra postulado al Proyecto")
         return false
       }
     }
 
     if (selectedProyecto?.numeroProyecto === "PRJ004") {
-      if (selectedPuesto.codPuesto === "P005") {
-        showError("No se ha podido completar la postulación al Puesto. Usted ya se encuentra postulado al Proyecto")
-        return false
-      }
-
-      if (selectedPuesto.codPuesto === "P007") {
+      if (puesto.codPuesto === "P005") {
         showError("No se ha podido completar la postulación al Puesto. El estudiante se encuentra dado de baja")
         return false
       }
 
-      if (selectedPuesto.codPuesto === "P011") {
+      if (puesto.codPuesto === "P007") {
         showError(
           "No se ha podido completar la postulación al Puesto. El estudiante no cuenta con la cantidad de materias regulares requeridas",
         )
         return false
       }
 
-      if (selectedPuesto.codPuesto === "P013") {
+      if (puesto.codPuesto === "P011") {
         showError(
           "No se ha podido completar la postulación al Puesto. El estudiante no cuenta con la cantidad de materias aprobadas requeridas",
         )
         return false
       }
+    }
+
+    if (selectedProyecto?.numeroProyecto === "PRJ005") {
+      if (puesto.codPuesto === "P007") {
+        setLoading(true)
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        setLoading(false)
+        showError("Postulación exitosa al proyecto", "success")
+        setHidePortalPacientes(true)
+        setCurrentStep(5) // Changed from 4 to 5
+        return
+      }
+
+      if (puesto.codPuesto === "P010") {
+        showError("No se ha podido completar la postulación al Puesto. Se ha alcanzado el cupo máximo del puesto")
+        return false
+      }
+    }
+
+    if (selectedProyecto?.numeroProyecto === "PRJ006") {
+      showError(
+        "No es posible postularse al puesto seleccionado. Usted no cuenta con ninguna carrera habilitada para el Puesto",
+      )
+      return false
     }
 
     setLoading(true)
@@ -300,7 +374,7 @@ export default function PostulacionProyecto() {
 
     showError("Postulación exitosa al proyecto", "success")
 
-    setCurrentStep(4) // Updated to step 4 (success screen)
+    setCurrentStep(5) // Changed from 4 to 5
   }
 
   const resetForm = () => {
@@ -308,6 +382,7 @@ export default function PostulacionProyecto() {
     setSelectedUniversidad("1") // Keep default university
     setNroLegajo("12345") // Keep default legajo
     setSelectedProyecto(null)
+    setSelectedPuestoOnly(null)
     setSelectedPuesto(null)
     setError({ show: false, message: "", type: "error" })
   }
@@ -334,11 +409,32 @@ export default function PostulacionProyecto() {
 
   const getCurrentPuestos = () => {
     if (!selectedProyecto) return []
-    return selectedProyecto.numeroProyecto === "PRJ003" ? puestosProyecto1 : puestosProyecto2
+    if (selectedProyecto.numeroProyecto === "PRJ003") return puestosProyecto1
+    if (selectedProyecto.numeroProyecto === "PRJ004") return puestosProyecto2
+    if (selectedProyecto.numeroProyecto === "PRJ005") return puestosProyecto3
+    if (selectedProyecto.numeroProyecto === "PRJ006") return puestosProyecto4
+    return []
+  }
+
+  const getVisibleProyectos = () => {
+    if (hidePortalPacientes) {
+      return proyectos.filter((p) => p.numeroProyecto !== "PRJ005")
+    }
+    return proyectos
+  }
+
+  const handleVerPuestos = () => {
+    if (selectedProyecto?.numeroProyecto === "PRJ006") {
+      showError(
+        "No es posible postularse al Proyecto seleccionado. Usted no cuenta con ninguna carrera habilitada para los Puestos",
+      )
+      return
+    }
+    setCurrentStep(2)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen p-4" style={{ backgroundColor: "#e8f0f7" }}>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Sistema de Prácticas Profesionales</h1>
@@ -347,7 +443,7 @@ export default function PostulacionProyecto() {
 
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4">
-            {[1, 2, 3, 4].map((step) => (
+            {[1, 2, 3, 4, 5].map((step) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -356,17 +452,17 @@ export default function PostulacionProyecto() {
                 >
                   {step}
                 </div>
-                {step < 4 && <div className={`w-12 h-1 mx-2 ${currentStep > step ? "bg-blue-600" : "bg-gray-200"}`} />}
+                {step < 5 && <div className={`w-12 h-1 mx-2 ${currentStep > step ? "bg-blue-600" : "bg-gray-200"}`} />}
               </div>
             ))}
           </div>
           <div className="flex justify-center mt-2">
-            <span className="text-sm text-gray-600">Paso {currentStep} de 4</span>
+            <span className="text-sm text-gray-600">Paso {currentStep} de 5</span>
           </div>
         </div>
 
         {currentStep === 1 && (
-          <Card className="w-full">
+          <Card className="w-full bg-white border-gray-300">
             <CardHeader className="text-center">
               <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
                 <Building2 className="w-6 h-6 text-purple-600" />
@@ -375,10 +471,10 @@ export default function PostulacionProyecto() {
               <CardDescription>Seleccione el proyecto al que desea postularse</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {proyectos.map((proyecto) => (
+              {getVisibleProyectos().map((proyecto) => (
                 <Card
                   key={proyecto.numeroProyecto}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
+                  className={`cursor-pointer transition-all hover:shadow-md bg-white border-gray-300 ${
                     selectedProyecto?.numeroProyecto === proyecto.numeroProyecto
                       ? "ring-2 ring-blue-500 bg-blue-50"
                       : ""
@@ -417,17 +513,44 @@ export default function PostulacionProyecto() {
                 </Card>
               ))}
 
+              {error.show && error.type === "error" && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start space-x-2">
+                  <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-red-800 text-sm">{error.message}</span>
+                </div>
+              )}
+
               <div className="flex justify-end pt-4">
-                <Button onClick={() => setCurrentStep(2)} disabled={!selectedProyecto}>
+                <Button
+                  onClick={handleVerPuestos}
+                  disabled={!selectedProyecto}
+                  className={`${
+                    selectedProyecto
+                      ? "bg-gray-800 hover:bg-gray-700 text-white"
+                      : "bg-gray-500 hover:bg-gray-600 text-white"
+                  }`}
+                >
                   Ver Puestos
                 </Button>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-blue-800 font-semibold mb-3 text-base">Ejemplos para prueba:</h3>
+                <div className="text-blue-700 text-sm space-y-1">
+                  <p>• Seleccione un proyecto para seguir con la postulación.</p>
+                  <p>
+                    • Seleccione "Sistema de Inventario Inteligente" para simular estudiante no posee ninguna carrera
+                    habilitada para los Puestos.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
 
+        {/* Step 2: Select Position (without career selection) */}
         {currentStep === 2 && selectedProyecto && (
-          <Card className="w-full">
+          <Card className="w-full bg-white border-gray-300">
             <CardHeader className="text-center">
               <div className="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
                 <BookOpen className="w-6 h-6 text-orange-600" />
@@ -439,10 +562,12 @@ export default function PostulacionProyecto() {
               {getCurrentPuestos().map((puesto) => (
                 <Card
                   key={puesto.codPuesto}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    selectedPuesto?.codPuesto === puesto.codPuesto ? "ring-2 ring-blue-500 bg-blue-50" : ""
+                  className={`cursor-pointer transition-all hover:shadow-md bg-white border-gray-300 ${
+                    selectedPuestoOnly?.codPuesto === puesto.codPuesto
+                      ? "ring-2 ring-blue-500 bg-blue-50"
+                      : "hover:border-blue-300"
                   }`}
-                  onClick={() => setSelectedPuesto(puesto)}
+                  onClick={() => setSelectedPuestoOnly(puesto)}
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-3">
@@ -458,30 +583,115 @@ export default function PostulacionProyecto() {
                       </div>
                     </div>
 
-                    <p className="text-gray-700 mb-3 text-sm">{puesto.descripcionPuesto}</p>
+                    <p className="text-gray-700 text-sm">{puesto.descripcionPuesto}</p>
+                  </CardContent>
+                </Card>
+              ))}
 
+              <div className="flex space-x-2 pt-4">
+                <Button
+                  variant="outline"
+                  className="flex-1 bg-transparent hover:bg-gray-200"
+                  onClick={() => {
+                    setCurrentStep(1)
+                    setSelectedPuestoOnly(null)
+                  }}
+                >
+                  Atrás
+                </Button>
+                <Button
+                  className={`flex-1 ${
+                    selectedPuestoOnly
+                      ? "bg-gray-800 hover:bg-gray-700 text-white"
+                      : "bg-gray-500 hover:bg-gray-600 text-white"
+                  }`}
+                  onClick={() => setCurrentStep(3)}
+                  disabled={!selectedPuestoOnly}
+                >
+                  Ver Requisitos
+                </Button>
+              </div>
+
+              {/* ... existing test examples banners ... */}
+              {selectedProyecto.numeroProyecto === "PRJ005" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-blue-800 font-semibold mb-3 text-base">Ejemplos para prueba:</h3>
+                  <div className="text-blue-700 text-sm space-y-1">
+                    <p>• Seleccione "Desarrollador/a Full stack" para simular última postulación exitosa.</p>
+                    <p>• Seleccione "Especialista en Testing" para simular cupo del puesto alcanzado.</p>
+                  </div>
+                </div>
+              )}
+
+              {selectedProyecto.numeroProyecto === "PRJ003" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-blue-800 font-semibold mb-3 text-base">Ejemplos para prueba:</h3>
+                  <div className="text-blue-700 text-sm space-y-1">
+                    <p>• Seleccione "Desarrollador/a Full stack" para simular postulación exitosa.</p>
+                    <p>• Seleccione "Diseñador/a UX/UI" para simular postulación fuera de fecha.</p>
+                    <p>• Seleccione "Analista de Sistemas" para simular postulación existente.</p>
+                  </div>
+                </div>
+              )}
+
+              {selectedProyecto.numeroProyecto === "PRJ004" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-blue-800 font-semibold mb-3 text-base">Ejemplos para prueba:</h3>
+                  <div className="text-blue-700 text-sm space-y-1">
+                    <p>• Seleccione "Jefe/a de Obra" para simular estudiante dado de baja.</p>
+                    <p>• Seleccione "Desarrollador/a Full stack" para simular materias regulares insuficientes.</p>
+                    <p>
+                      • Seleccione "Técnico/a en Seguridad e Higiene" para simular materias aprobadas insuficientes.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 3: Select Career and View Requirements */}
+        {currentStep === 3 && selectedProyecto && selectedPuestoOnly && (
+          <Card className="w-full bg-white border-gray-300">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                <BookOpen className="w-6 h-6 text-indigo-600" />
+              </div>
+              <CardTitle>Requisitos por Carrera</CardTitle>
+              <CardDescription>Puesto: {selectedPuestoOnly.nombrePuesto} - Seleccione su carrera</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {selectedPuestoOnly.nombreCarrera.split("\n").map((carrera, index) => (
+                <Card
+                  key={index}
+                  className={`cursor-pointer transition-all hover:shadow-md bg-white border-2 ${
+                    selectedPuesto?.carreraIndex === index
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-blue-300"
+                  }`}
+                  onClick={() =>
+                    setSelectedPuesto({
+                      puesto: selectedPuestoOnly,
+                      carreraIndex: index,
+                      carreraNombre: carrera,
+                    })
+                  }
+                >
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-3">{carrera}</h3>
                     <Separator className="my-3" />
-
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Requisitos:</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
-                        <div className="bg-gray-50 p-2 rounded">
-                          <span className="font-medium">Carrera:</span>
-                          <br />
-                          {puesto.nombreCarrera.split("\n").map((carrera, index) => (
-                            <div key={index}>{carrera}</div>
-                          ))}
-                        </div>
-                        <div className="bg-gray-50 p-2 rounded">
-                          <span className="font-medium">Mat. Aprobadas:</span>
-                          <br />
-                          Mínimo {puesto.cantMateriasAprobadasReq}
-                        </div>
-                        <div className="bg-gray-50 p-2 rounded">
-                          <span className="font-medium">Mat. Regulares:</span>
-                          <br />
-                          Mínimo {puesto.cantMateriasRegularesReq}
-                        </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <span className="text-sm font-medium text-blue-800">Mat. Aprobadas:</span>
+                        <p className="text-lg font-semibold text-gray-800">
+                          Mínimo {selectedPuestoOnly.cantMateriasAprobadasReq[index]}
+                        </p>
+                      </div>
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <span className="text-sm font-medium text-green-800">Mat. Regulares:</span>
+                        <p className="text-lg font-semibold text-gray-800">
+                          Mínimo {selectedPuestoOnly.cantMateriasRegularesReq[index]}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -489,45 +699,35 @@ export default function PostulacionProyecto() {
               ))}
 
               <div className="flex space-x-2 pt-4">
-                <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setCurrentStep(1)}>
+                <Button
+                  variant="outline"
+                  className="flex-1 bg-transparent hover:bg-gray-200"
+                  onClick={() => {
+                    setCurrentStep(2)
+                    setSelectedPuesto(null)
+                  }}
+                >
                   Atrás
                 </Button>
-                <Button className="flex-1" onClick={() => setCurrentStep(3)} disabled={!selectedPuesto}>
+                <Button
+                  className={`flex-1 ${
+                    selectedPuesto
+                      ? "bg-gray-800 hover:bg-gray-700 text-white"
+                      : "bg-gray-500 hover:bg-gray-600 text-white"
+                  }`}
+                  onClick={() => setCurrentStep(4)}
+                  disabled={!selectedPuesto}
+                >
                   Postularse
                 </Button>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="text-blue-800 font-semibold mb-3 text-base">Ejemplos para prueba:</h3>
-                <div className="text-blue-700 text-sm space-y-1">
-                  {selectedProyecto.numeroProyecto === "PRJ003" ? (
-                    <>
-                      <p>• Seleccione "Desarrollador/a Full stack" para simular postulación exitosa.</p>
-                      <p>
-                        • Seleccione "Diseñador/a UX/UI" para simular estudiante no posee ninguna carrera habilitada
-                        para el Puesto.
-                      </p>
-                      <p>• Seleccione "Analista de Sistemas" para simular postulación fuera de fecha.</p>
-                      <p>• Seleccione "Especialista en Testing" para simular cupo del puesto alcanzado.</p>
-                    </>
-                  ) : (
-                    <>
-                      <p>• Seleccione "Jefe/a de Obra" para simular postulación existente.</p>
-                      <p>• Seleccione "Desarrollador/a Full stack" para simular estudiante dado de baja.</p>
-                      <p>
-                        • Seleccione "Técnico/a en Seguridad e Higiene" para simular materias regulares insuficientes.
-                      </p>
-                      <p>• Seleccione "Analista de Costos" para simular materias aprobadas insuficientes.</p>
-                    </>
-                  )}
-                </div>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {currentStep === 3 && selectedProyecto && selectedPuesto && (
-          <Card className="w-full max-w-2xl mx-auto">
+        {/* Step 4: Confirm Application */}
+        {currentStep === 4 && selectedProyecto && selectedPuesto && (
+          <Card className="w-full max-w-2xl mx-auto bg-white border-gray-300">
             <CardHeader className="text-center">
               <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle className="w-6 h-6 text-yellow-600" />
@@ -549,17 +749,21 @@ export default function PostulacionProyecto() {
                   </div>
                   <div>
                     <span className="font-medium">Puesto:</span>
-                    <p>{selectedPuesto.nombrePuesto}</p>
+                    <p>{selectedPuesto.puesto.nombrePuesto}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium">Carrera:</span>
+                    <p>{selectedPuesto.carreraNombre}</p>
                   </div>
                   <div>
                     <span className="font-medium">Dedicación:</span>
-                    <p>{selectedPuesto.horasDedicadas} horas/semana</p>
+                    <p>{selectedPuesto.puesto.horasDedicadas} horas/semana</p>
                   </div>
                   <div>
                     <span className="font-medium">Legajo:</span>
                     <p>{nroLegajo}</p>
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <span className="font-medium">Universidad:</span>
                     <p>{universidades.find((u) => u.id === selectedUniversidad)?.nombreUniversidad}</p>
                   </div>
@@ -576,13 +780,17 @@ export default function PostulacionProyecto() {
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
-                  className="flex-1 bg-transparent"
+                  className="flex-1 bg-transparent hover:bg-gray-200"
                   onClick={() => handlePostulacion(false)}
                   disabled={loading}
                 >
                   No
                 </Button>
-                <Button className="flex-1" onClick={() => handlePostulacion(true)} disabled={loading}>
+                <Button
+                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white"
+                  onClick={() => handlePostulacion(true)}
+                  disabled={loading}
+                >
                   {loading ? "Procesando..." : "Sí, Postularme"}
                 </Button>
               </div>
@@ -590,15 +798,16 @@ export default function PostulacionProyecto() {
           </Card>
         )}
 
-        {currentStep === 4 && (
-          <Card className="w-full max-w-md mx-auto text-center">
+        {/* Step 5: Successful Application */}
+        {currentStep === 5 && (
+          <Card className="w-full max-w-md mx-auto text-center bg-white border-gray-300">
             <CardContent className="p-8">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <h2 className="text-2xl font-bold text-green-800 mb-4">¡Postulación Exitosa!</h2>
               <p className="text-gray-600 mb-6">Su postulación al proyecto ha sido registrada correctamente.</p>
-              <Button onClick={resetForm} className="w-full">
+              <Button onClick={resetForm} className="w-full bg-gray-800 hover:bg-gray-700 text-white">
                 Nueva Postulación
               </Button>
             </CardContent>
