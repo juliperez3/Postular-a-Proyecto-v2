@@ -426,7 +426,7 @@ export default function PostulacionProyecto() {
   const handleVerPuestos = () => {
     if (selectedProyecto?.numeroProyecto === "PRJ006") {
       showError(
-        "No es posible postularse al Proyecto seleccionado. Usted no cuenta con ninguna carrera habilitada para los Puestos",
+        "No es posible postularse al proyecto seleccionado. Usted no cuenta con ninguna carrera habilitada para los Puestos",
       )
       return
     }
