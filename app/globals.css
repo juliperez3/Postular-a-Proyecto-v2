@@ -1,7 +1,4 @@
 @import "tailwindcss";
-/*@import "tw-animate-css";*/
-@plugin "tailwindcss-animate";
-
 
 @custom-variant dark (&:is(.dark *));
 
@@ -118,7 +115,6 @@
 
 @layer base {
   * {
-    /* Removed invalid border-border class that was causing the error */
     @apply outline-ring/50;
   }
   body {
