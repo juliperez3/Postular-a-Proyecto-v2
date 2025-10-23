@@ -1,13 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle, AlertTriangle, Building2, Calendar, Clock, BookOpen } from "lucide-react"
+import { CheckCircle, AlertTriangle, Building2, Calendar, Clock, BookOpen, Bell, X } from "lucide-react"
 
 // Tipos de datos
 interface Universidad {
@@ -51,6 +50,15 @@ interface ErrorState {
   show: boolean
   message: string
   type: "error" | "success"
+}
+
+interface Notification {
+  id: string
+  timestamp: string
+  projectCode: string
+  projectName: string
+  message: string
+  type: "success" | "info"
 }
 
 // Datos mock
@@ -271,6 +279,8 @@ export default function PostulacionProyecto() {
   const [error, setError] = useState<ErrorState>({ show: false, message: "", type: "error" })
   const [loading, setLoading] = useState(false)
   const [hidePortalPacientes, setHidePortalPacientes] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [showNotifications, setShowNotifications] = useState(false)
 
   const showError = (message: string, type: "error" | "success" = "error") => {
     setError({ show: true, message, type })
@@ -361,6 +371,37 @@ export default function PostulacionProyecto() {
     setLoading(false)
     showError(errorConfig.message, "success")
 
+    // Added notification based on project
+    const now = new Date()
+    const timestamp = now.toLocaleString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    })
+
+    let notificationMessage = ""
+    if (proyectoNum === "PRJ005" && puestoCode === "P007") {
+      // Last application - special message
+      notificationMessage = `Tu postulación al Proyecto ${selectedProyecto.nombreProyecto} esta en evaluación`
+    } else {
+      // Normal application
+      notificationMessage = `Te has postulado al proyecto ${selectedProyecto.nombreProyecto}`
+    }
+
+    const newNotification: Notification = {
+      id: `${Date.now()}`,
+      timestamp,
+      projectCode: proyectoNum,
+      projectName: selectedProyecto.nombreProyecto,
+      message: notificationMessage,
+      type: "success",
+    }
+
+    setNotifications((prev) => [newNotification, ...prev])
+
     if (proyectoNum === "PRJ005" && puestoCode === "P007") {
       setHidePortalPacientes(true)
     }
@@ -430,30 +471,105 @@ export default function PostulacionProyecto() {
   }
 
   return (
-    <div className="min-h-screen p-4" style={{ backgroundColor: "#e8f0f7" }}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sistema de Prácticas Profesionales</h1>
-          <p className="text-gray-600">Complete el proceso paso a paso para postularse a un proyecto</p>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all hover:scale-105"
+            aria-label="Notificaciones"
+          >
+            <Bell className="w-6 h-6 text-gray-700" />
+            {notifications.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {notifications.length}
+              </span>
+            )}
+          </button>
         </div>
 
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
+        {showNotifications && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 px-4">
+            <Card className="w-full max-w-2xl bg-white shadow-2xl max-h-[80vh] flex flex-col">
+              <CardHeader className="border-b">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl">Notificaciones</CardTitle>
+                    <CardDescription className="mt-1">Estudiante</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowNotifications(false)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      aria-label="Cerrar"
+                    >
+                      <X className="w-5 h-5 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="overflow-y-auto flex-1 p-6">
+                {notifications.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p>No hay notificaciones</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm text-gray-600">{notification.timestamp}</span>
+                            </div>
+                            <p className="font-semibold text-gray-900 mb-1">Proyecto #{notification.projectCode}</p>
+                            <p className="text-gray-700 text-sm">{notification.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        <div className="text-center mb-8 space-y-2">
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Sistema de Prácticas Profesionales</h1>
+          <p className="text-lg text-gray-600">Complete el proceso paso a paso para postularse a un proyecto</p>
+        </div>
+
+        <div className="mb-10">
+          <div className="flex items-center justify-center">
             {[1, 2, 3, 4, 5].map((step) => (
               <div key={step} className="flex items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep >= step ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                    currentStep >= step
+                      ? "bg-blue-600 text-white shadow-lg scale-110"
+                      : "bg-white text-gray-400 border-2 border-gray-300"
                   }`}
                 >
                   {step}
                 </div>
-                {step < 5 && <div className={`w-12 h-1 mx-2 ${currentStep > step ? "bg-blue-600" : "bg-gray-200"}`} />}
+                {step < 5 && (
+                  <div
+                    className={`w-16 h-1 mx-1 transition-all ${currentStep > step ? "bg-blue-600" : "bg-gray-300"}`}
+                  />
+                )}
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-2">
-            <span className="text-sm text-gray-600">Paso {currentStep} de 5</span>
+          <div className="flex justify-center mt-3">
+            <span className="text-sm font-medium text-gray-700 bg-white px-4 py-1 rounded-full shadow-sm">
+              Paso {currentStep} de 5
+            </span>
           </div>
         </div>
 
